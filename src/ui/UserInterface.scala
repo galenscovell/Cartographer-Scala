@@ -5,7 +5,7 @@ import java.awt.{Color}
 import scala.swing._
 
 class UserInterface extends MainFrame {
-  title = "Prim's Algorithm"
+  title = "Visualizing Prim's"
   preferredSize = new Dimension(800, 480)
 
   val grid = new Grid(800, 480, 10)
