@@ -1,66 +1,55 @@
 package processing
 
-import java.awt.Color
-
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
-class Grid (val width: Int, val height: Int, val nodeSize: Int) {
-  private val gridWidth: Int = width / nodeSize
-  private val gridHeight: Int = height / nodeSize
-  private val nodes: Array[Array[Node]] = Array.ofDim[Node](gridWidth, gridHeight)
-  private var frontier: ArrayBuffer[Node] = ArrayBuffer()
+
+class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing: Int) {
+  private val gridWidth: Int = (width - cellSize) / (cellSize + cellSpacing)
+  private val gridHeight: Int = (height - cellSize) / (cellSize + cellSpacing)
+
+  private val cells: Array[Array[Cell]] = Array.ofDim[Cell](gridWidth, gridHeight)
+  private var frontier: ArrayBuffer[Cell] = ArrayBuffer()
+
   private val random: Random = Random
+  private var nextCell: Cell = null
+  private var currentCell: Cell = null
 
-  // Generate grid full of walls
-  for (x <- 0 until gridWidth) {
-    for (y <- 0 until gridHeight) {
-      val newNode: Node = new Node(x, y, nodeSize)
-      // newNode.color = new Color(100, x * 2, y * 2)
-      nodes(x)(y) = newNode
+  build()
+
+  
+  private def build() = {
+    // Generate grid full of walls
+    for (x <- 0 until gridWidth) {
+      for (y <- 0 until gridHeight) {
+        val newNode: Cell = new Cell(x, y, cellSize, cellSpacing)
+        cells(x)(y) = newNode
+      }
     }
-  }
 
-  // Randomly pick first maze node
-  val startX: Int = random.nextInt(gridWidth)
-  val startY: Int = random.nextInt(gridHeight)
-  mark(startX, startY)
+    // Set cell neighbors
+    for (x <- 0 until gridWidth) {
+      for (y <- 0 until gridHeight) {
+        setNeighbors(cells(x)(y))
+      }
+    }
+
+    // Start in bottom left corner
+    mark(0, gridHeight - 1)
+  }
 
 
   private def mark(x: Int, y: Int) = {
-    nodes(x)(y).color = Color.WHITE
+    val targetNode: Cell = cells(x)(y)
+    targetNode.setFloor()
 
-    for (dx <- -1 to 1 by 2) {
-      val newX: Int = x + dx
-      if (!isOutOfBounds(newX, y)) {
-        val neighborNode: Node = nodes(newX)(y)
-        if (neighborNode.isWall()) {
+    for (n <- 0 to 3) {
+      if (targetNode.neighbors(n) != null) {
+        val neighborNode: Cell = targetNode.neighbors(n)
+        if (neighborNode.isEmpty()) {
           frontier += neighborNode
         }
       }
-    }
-
-    for (dy <- -1 to 1 by 2) {
-      val newY: Int = y + dy
-      if (!isOutOfBounds(x, newY)) {
-        val neighborNode: Node = nodes(x)(newY)
-        if (neighborNode.isWall()) {
-          frontier += neighborNode
-        }
-      }
-    }
-  }
-
-
-  def expandFrontier() = {
-    if (frontier.length > 0) {
-      val randomIndex: Int = random.nextInt(frontier.length)
-      val neighborNode: Node = frontier(randomIndex)
-      frontier -= neighborNode
-      mark(neighborNode.x, neighborNode.y)
-      true
-    } else {
-      false
     }
   }
 
@@ -70,7 +59,72 @@ class Grid (val width: Int, val height: Int, val nodeSize: Int) {
   }
 
 
-  def getGrid(): Array[Array[Node]] = {
-    nodes
+  private def setNeighbors(cell: Cell) = {
+    if (!isOutOfBounds(cell.x+1, cell.y)) {
+      cell.neighbors(0) = cells(cell.x+1)(cell.y)
+    }
+    if (!isOutOfBounds(cell.x-1, cell.y)) {
+      cell.neighbors(1) = cells(cell.x-1)(cell.y)
+    }
+    if (!isOutOfBounds(cell.x, cell.y+1)) {
+      cell.neighbors(2) = cells(cell.x)(cell.y+1)
+    }
+    if (!isOutOfBounds(cell.x, cell.y-1)) {
+      cell.neighbors(3) = cells(cell.x)(cell.y-1)
+    }
+  }
+
+
+  private def getDirection(fx: Int, fy: Int, nx: Int, ny: Int) = {
+    // N=1, E=2, S=4, W=8
+    if (fx < nx) {
+      2
+    } else if (fx > nx) {
+      8
+    } else if (fy < ny) {
+      4
+    } else {
+      1
+    }
+  }
+
+
+  def getCells(): Array[Array[Cell]] = {
+    cells
+  }
+
+
+  def expand() = {
+    if (nextCell == null) {
+      if (frontier.length > 0) {
+        nextCell = frontier(random.nextInt(frontier.length))
+        nextCell.explore()
+        var connectingCell: Cell = null
+
+        while (connectingCell == null) {
+          val randomIndex: Int = random.nextInt(4)
+          if (nextCell.neighbors(randomIndex) != null && nextCell.neighbors(randomIndex).isFloor()) {
+            connectingCell = nextCell.neighbors(randomIndex)
+          }
+        }
+        currentCell = connectingCell
+        true
+      } else {
+        false
+      }
+    } else {
+      val direction: Int = getDirection(currentCell.x, currentCell.y, nextCell.x, nextCell.y)
+      currentCell.connect(direction)
+      mark(nextCell.x, nextCell.y)
+      currentCell = nextCell
+      while (frontier.contains(currentCell)) {
+        frontier -= currentCell
+      }
+      while (frontier.contains(nextCell)) {
+        frontier -= nextCell
+      }
+      nextCell = null
+      true
+    }
   }
 }
