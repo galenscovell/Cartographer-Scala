@@ -8,16 +8,20 @@ import scala.swing._
 
 
 class Frame extends MainFrame {
-  private var cellSize: Int = 9
-  private val cellSpacing: Int = 1
+  private val cellSize: Int = 14
+  private val cellSpacing: Int = 2
   private val width: Int = 800
   private val height: Int = 480
+  private val columns: Int = (width - cellSize) / (cellSize + cellSpacing)
+  private val rows: Int = (height - cellSize) / (cellSize + cellSpacing)
+  private val maxCells: Int = width * height / (cellSize + cellSpacing)
+  private val borderSize: Int = cellSize + cellSpacing
 
-  private final val framerate: Int = 60
+  private final val framerate: Int = 600
   private var running: Boolean = true
 
   private val grid: Grid = new Grid(width, height, cellSize, cellSpacing)
-  private val canvas: Canvas = new Canvas(grid.getCells(), (width - cellSize) / (cellSize + cellSpacing), (height - cellSize) / (cellSize + cellSpacing))
+  private val canvas: Canvas = new Canvas(grid.getCells(), columns, rows, maxCells)
 
   createComponents(grid, canvas)
   startThread(grid, canvas)
@@ -25,9 +29,9 @@ class Frame extends MainFrame {
 
   private def createComponents(grid: Grid, canvas: Canvas) = {
     title = "Visualizing Prim's"
-    preferredSize = new Dimension(width + cellSize - 2, height + cellSize * 3 + cellSpacing * 2)
+    preferredSize = new Dimension(width + cellSize * 2 + cellSpacing * 3, height + cellSize * 4)
     contents = new BorderPanel {
-      border = Swing.MatteBorder(0, 0, 0, 0, new Color(52, 73, 94))
+      border = Swing.MatteBorder(borderSize, borderSize, borderSize, borderSize, new Color(44, 62, 80))
       background = Color.BLACK
       add(canvas, BorderPanel.Position.Center)
     }
@@ -39,9 +43,7 @@ class Frame extends MainFrame {
       override def run {
         while (running) {
           val start: Long = System.currentTimeMillis()
-          if (!grid.expand()) {
-            running = false
-          }
+          grid.expand()
           canvas.repaint()
           val end: Long = System.currentTimeMillis()
           // Sleep to match framerate

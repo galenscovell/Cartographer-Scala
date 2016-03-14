@@ -102,29 +102,29 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
         var connectingCell: Cell = null
 
         while (connectingCell == null) {
-          val randomIndex: Int = random.nextInt(4)
+          var randomIndex: Int = 0
+          val weight: Int = random.nextInt(10)
+          if (weight > 3) {
+            randomIndex = random.nextInt(2)
+          } else {
+            randomIndex = random.nextInt(4)
+          }
           if (nextCell.neighbors(randomIndex) != null && nextCell.neighbors(randomIndex).isFloor()) {
             connectingCell = nextCell.neighbors(randomIndex)
           }
         }
         currentCell = connectingCell
-        true
-      } else {
-        false
+        val direction: Int = getDirection(currentCell.x, currentCell.y, nextCell.x, nextCell.y)
+        currentCell.connect(direction)
+        nextCell.setParent(currentCell)
       }
     } else {
-      val direction: Int = getDirection(currentCell.x, currentCell.y, nextCell.x, nextCell.y)
-      currentCell.connect(direction)
       mark(nextCell.x, nextCell.y)
       currentCell = nextCell
       while (frontier.contains(currentCell)) {
         frontier -= currentCell
       }
-      while (frontier.contains(nextCell)) {
-        frontier -= nextCell
-      }
       nextCell = null
-      true
     }
   }
 }

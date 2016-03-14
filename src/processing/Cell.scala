@@ -8,11 +8,18 @@ class Cell(val xPos: Int, val yPos: Int, val cellSize: Int, val cellSpacing: Int
   var top: Int = yPos * cellSize + (yPos + 1) * cellSpacing
   var width: Int = cellSize
   var height: Int = cellSize
-  private var cellType = CellType.EMPTY
+  var cellType = CellType.EMPTY
   val neighbors: Array[Cell] = Array.ofDim[Cell](4)
   var animating: Boolean = false
   var frame: Int = 0
+  var parent: Cell = null
+  var distanceFromRoot: Float = 0f
 
+
+  def setParent(p: Cell) = {
+    parent = p
+    distanceFromRoot = p.distanceFromRoot + 1
+  }
 
   def animate() = {
     if (frame > 0) {
@@ -20,6 +27,7 @@ class Cell(val xPos: Int, val yPos: Int, val cellSize: Int, val cellSpacing: Int
     } else {
       animating = false
     }
+    frame
   }
 
   def isFloor() = {
@@ -41,7 +49,7 @@ class Cell(val xPos: Int, val yPos: Int, val cellSize: Int, val cellSpacing: Int
   def explore() = {
     cellType = CellType.FLOOR
     animating = true
-    frame = 60
+    frame = 80
   }
 
   def isEmpty() = {
