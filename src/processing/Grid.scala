@@ -8,7 +8,7 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
   private val gridWidth: Int = (width - cellSize) / (cellSize + cellSpacing)
   private val gridHeight: Int = (height - cellSize) / (cellSize + cellSpacing)
 
-  private val cells: Array[Array[Cell]] = Array.ofDim[Cell](gridWidth, gridHeight)
+  private var cells: Array[Array[Cell]] = Array.ofDim[Cell](gridWidth, gridHeight)
   private var frontier: ArrayBuffer[Cell] = ArrayBuffer()
 
   private val random: Random = Random
@@ -18,7 +18,10 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
   build()
 
   
-  private def build() = {
+  def build() = {
+    frontier.clear()
+    nextCell = null
+    currentCell = null
     // Generate grid full of walls
     for (x <- 0 until gridWidth) {
       for (y <- 0 until gridHeight) {
@@ -33,11 +36,12 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
         setNeighbors(cells(x)(y))
       }
     }
+  }
 
+  def start() = {
     // Start in bottom left corner
     mark(0, gridHeight - 1)
   }
-
 
   private def mark(x: Int, y: Int) = {
     val targetNode: Cell = cells(x)(y)
@@ -53,11 +57,9 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
     }
   }
 
-
   private def isOutOfBounds(x: Int, y: Int) = {
     x < 0 || x >= gridWidth || y < 0 || y >= gridHeight
   }
-
 
   private def setNeighbors(cell: Cell) = {
     if (!isOutOfBounds(cell.x+1, cell.y)) {
@@ -74,7 +76,6 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
     }
   }
 
-
   private def getDirection(fx: Int, fy: Int, nx: Int, ny: Int) = {
     // N=1, E=2, S=4, W=8
     if (fx < nx) {
@@ -88,11 +89,9 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
     }
   }
 
-
   def getCells(): Array[Array[Cell]] = {
     cells
   }
-
 
   def expand() = {
     if (nextCell == null) {

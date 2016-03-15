@@ -9,7 +9,12 @@ import scala.swing._
 class Canvas (val nodeGrid: Array[Array[Cell]], val width: Int, val height: Int, maxCells: Int) extends Component {
   private val backgroundColor: Color = new Color(38, 38, 37)
   private val floorColor: Color = new Color(189, 184, 174)
+  private var mode: Boolean = false
 
+
+  def switchMode() = {
+    mode = !mode
+  }
 
   override def paintComponent(g: Graphics2D) {
     val dim: Dimension = size
@@ -23,15 +28,18 @@ class Canvas (val nodeGrid: Array[Array[Cell]], val width: Int, val height: Int,
         var c: Color = backgroundColor
         val node: Cell = nodeGrid(x)(y)
         if (node.isFloor()) {
-          val distance: Float = node.distanceFromRoot
-          val colorVal: Float = distance / (maxCells / 255)
-          c = new Color(0.4f, colorVal, colorVal)
-//          if (node.animating) {
-//            val frame: Int = node.animate()
-//            c = new Color(230 / 255f, 126 / 255f, 34 / 255f, 1 - (frame / 80f))
-//          } else {
-//            c = floorColor
-//          }
+          val frame: Int = node.animate()
+          if (mode) {
+            val distance: Float = node.distanceFromRoot
+            val colorVal: Float = distance / (maxCells / 255)
+            c = new Color(0.4f, colorVal, colorVal)
+          } else {
+            if (frame == 0) {
+              c = floorColor
+            } else {
+              c = new Color(230 / 255f, 126 / 255f, 34 / 255f, 1 - (frame / 80f))
+            }
+          }
         }
         g.setColor(c)
         g.fillRect(node.left, node.top, node.width, node.height)
