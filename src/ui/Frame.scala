@@ -4,13 +4,12 @@ import java.awt.Color
 
 import processing.Grid
 
-import scala.swing
 import scala.swing._
 
 
 class Frame extends MainFrame {
-  private val cellSize: Int = 14
-  private val cellSpacing: Int = 2
+  private val cellSize: Int = 16
+  private val cellSpacing: Int = 0
   private val width: Int = 800
   private val height: Int = 480
   private val columns: Int = (width - cellSize) / (cellSize + cellSpacing)
@@ -18,7 +17,7 @@ class Frame extends MainFrame {
   private val maxCells: Int = width * height / (cellSize + cellSpacing)
   private val borderSize: Int = cellSize + cellSpacing
 
-  private final val framerate: Int = 480
+  private final val framerate: Int = 360
   private var running: Boolean = true
   private var clear: Boolean = false
   private var began: Boolean = false
@@ -45,7 +44,7 @@ class Frame extends MainFrame {
 
   private def createComponents(grid: Grid, canvas: Canvas) = {
     title = "Visualizing Prim's"
-    preferredSize = new Dimension(width + cellSize * 2 + cellSpacing * 3, 40 + height + cellSize * 4)
+    preferredSize = new Dimension(width + cellSize * 2 + cellSpacing * 3, 30 + height + cellSize * 4)
     val buttonPanel = new FlowPanel {
       background = new swing.Color(44, 62, 80)
       contents += new Button {
@@ -56,8 +55,9 @@ class Frame extends MainFrame {
         tooltip = "Create a new maze"
         action = new Action("Create") {
           override def apply() = {
-            grid.start()
-            began = true
+//            grid.buildDebugGrid()
+             grid.start()
+             began = true
           }
         }
       }

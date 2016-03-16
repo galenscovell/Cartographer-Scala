@@ -18,6 +18,28 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
   build()
 
   
+  def buildDebugGrid() = {
+    cells(0)(0).connect(2)
+    cells(0)(1).connect(10)
+    cells(0)(2).connect(2)
+    cells(0)(3).connect(3)
+
+    cells(1)(0).connect(4)
+    cells(1)(1).connect(5)
+    cells(1)(2).connect(6)
+    cells(1)(3).connect(7)
+
+    cells(2)(0).connect(8)
+    cells(2)(1).connect(9)
+    cells(2)(2).connect(10)
+    cells(2)(3).connect(11)
+
+    cells(3)(0).connect(12)
+    cells(3)(1).connect(13)
+    cells(3)(2).connect(14)
+    cells(3)(3).connect(15)
+  }
+  
   def build() = {
     frontier.clear()
     nextCell = null
@@ -25,8 +47,8 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
     // Generate grid full of walls
     for (x <- 0 until gridWidth) {
       for (y <- 0 until gridHeight) {
-        val newNode: Cell = new Cell(x, y, cellSize, cellSpacing)
-        cells(x)(y) = newNode
+        val newCell: Cell = new Cell(x, y, cellSize, cellSpacing)
+        cells(x)(y) = newCell
       }
     }
 
@@ -57,7 +79,7 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
     }
   }
 
-  private def isOutOfBounds(x: Int, y: Int) = {
+  private def isOutOfBounds(x: Int, y: Int): Boolean = {
     x < 0 || x >= gridWidth || y < 0 || y >= gridHeight
   }
 
@@ -76,7 +98,7 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
     }
   }
 
-  private def getDirection(fx: Int, fy: Int, nx: Int, ny: Int) = {
+  private def getDirection(fx: Int, fy: Int, nx: Int, ny: Int): Int = {
     // N=1, E=2, S=4, W=8
     if (fx < nx) {
       2
@@ -114,7 +136,9 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
         }
         currentCell = connectingCell
         val direction: Int = getDirection(currentCell.x, currentCell.y, nextCell.x, nextCell.y)
+        val oppositeDirection: Int = getDirection(nextCell.x, nextCell.y, currentCell.x, currentCell.y)
         currentCell.connect(direction)
+        nextCell.connect(oppositeDirection)
         nextCell.setParent(currentCell)
       }
     } else {

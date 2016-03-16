@@ -2,18 +2,22 @@ package processing
 
 
 class Cell(val xPos: Int, val yPos: Int, val cellSize: Int, val cellSpacing: Int) {
-  val x: Int = xPos
-  val y: Int = yPos
+  var x: Int = xPos
+  var y: Int = yPos
   var left: Int = xPos * cellSize + (xPos + 1) * cellSpacing
   var top: Int = yPos * cellSize + (yPos + 1) * cellSpacing
   var width: Int = cellSize
   var height: Int = cellSize
-  var cellType = CellType.EMPTY
+
   val neighbors: Array[Cell] = Array.ofDim[Cell](4)
   var animating: Boolean = false
-  var frame: Int = 0
-  var parent: Cell = null
   var distanceFromRoot: Float = 0f
+
+  private var cellType = CellType.EMPTY
+  private var frame: Int = 0
+  private var parent: Cell = null
+  private var connectedDirs: Array[Boolean] = new Array[Boolean](4)
+  private var connections: Int = 0
 
 
   def setParent(p: Cell) = {
@@ -49,7 +53,7 @@ class Cell(val xPos: Int, val yPos: Int, val cellSize: Int, val cellSpacing: Int
   def explore() = {
     cellType = CellType.FLOOR
     animating = true
-    frame = 80
+    frame = 90
   }
 
   def isEmpty() = {
@@ -58,16 +62,16 @@ class Cell(val xPos: Int, val yPos: Int, val cellSize: Int, val cellSpacing: Int
   
   def connect(cardinal: Int) = {
     // N=1, E=2, S=4, W=8
-    if (cardinal == 1) {
-      top -= cellSpacing
-      height += cellSpacing
-    } else if (cardinal == 2) {
-      width += cellSpacing
-    } else if (cardinal == 4) {
-      height += cellSpacing
-    } else if (cardinal == 8) {
-      left -= cellSpacing
-      width += cellSpacing
-    }
+    connections += cardinal
+  }
+
+  def getConnections(): Int = {
+    // Connections representation value
+    //    1
+    //  8 * 2
+    //    4
+    // Example: Connected top and bottom = 5
+    // Example: Connected top and left = 9
+    connections
   }
 }
