@@ -25,6 +25,10 @@ class Cell(val xPos: Int, val yPos: Int, val cellSize: Int, val cellSpacing: Int
     distanceFromRoot = p.distanceFromRoot + 1
   }
 
+  def getParent(): Cell = {
+    parent
+  }
+
   def animate() = {
     if (frame > 0) {
       frame -= 1

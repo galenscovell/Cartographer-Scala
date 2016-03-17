@@ -17,29 +17,7 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
 
   build()
 
-  
-  def buildDebugGrid() = {
-    cells(0)(0).connect(2)
-    cells(0)(1).connect(10)
-    cells(0)(2).connect(2)
-    cells(0)(3).connect(3)
 
-    cells(1)(0).connect(4)
-    cells(1)(1).connect(5)
-    cells(1)(2).connect(6)
-    cells(1)(3).connect(7)
-
-    cells(2)(0).connect(8)
-    cells(2)(1).connect(9)
-    cells(2)(2).connect(10)
-    cells(2)(3).connect(11)
-
-    cells(3)(0).connect(12)
-    cells(3)(1).connect(13)
-    cells(3)(2).connect(14)
-    cells(3)(3).connect(15)
-  }
-  
   def build() = {
     frontier.clear()
     nextCell = null

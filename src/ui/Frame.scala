@@ -1,6 +1,7 @@
 package ui
 
 import java.awt.Color
+import javax.swing.UIManager
 
 import processing.Grid
 
@@ -8,32 +9,44 @@ import scala.swing._
 
 
 class Frame extends MainFrame {
-  private val cellSize: Int = 16
+  private val cellSize: Int = 24
   private val cellSpacing: Int = 0
-  private val width: Int = 800
+  private val width: Int = 960
   private val height: Int = 480
   private val columns: Int = (width - cellSize) / (cellSize + cellSpacing)
   private val rows: Int = (height - cellSize) / (cellSize + cellSpacing)
   private val maxCells: Int = width * height / (cellSize + cellSpacing)
   private val borderSize: Int = cellSize + cellSpacing
 
-  private final val framerate: Int = 360
+  private final val framerate: Int = 960
   private var running: Boolean = true
   private var clear: Boolean = false
   private var began: Boolean = false
 
   private val grid: Grid = new Grid(width, height, cellSize, cellSpacing)
-  private val canvas: Canvas = new Canvas(grid.getCells(), columns, rows, maxCells)
+  private val canvas: Canvas = new Canvas(grid.getCells(), columns, rows, maxCells, cellSize)
   private val buttonDim: Dimension = new Dimension(150, 30)
+
+  UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel")
   private val modeButton: ToggleButton = new ToggleButton {
     borderPainted = false
     focusPainted = false
     preferredSize = buttonDim
     margin = new Insets(10, 0, 10, 0)
-    tooltip = "Display distance from root via color intensity"
     action = new Action("Heatmap") {
       override def apply() = {
         canvas.switchMode()
+      }
+    }
+  }
+  private val traceButton: ToggleButton = new ToggleButton {
+    borderPainted = false
+    focusPainted = false
+    preferredSize = buttonDim
+    margin = new Insets(10, 0, 10, 0)
+    action = new Action("Solve") {
+      override def apply() = {
+        canvas.switchTrace()
       }
     }
   }
@@ -44,37 +57,23 @@ class Frame extends MainFrame {
 
   private def createComponents(grid: Grid, canvas: Canvas) = {
     title = "Visualizing Prim's"
-    preferredSize = new Dimension(width + cellSize * 2 + cellSpacing * 3, 30 + height + cellSize * 4)
+    preferredSize = new Dimension(width + cellSize + 16, height + cellSize * 4 + 4)
     val buttonPanel = new FlowPanel {
-      background = new swing.Color(44, 62, 80)
+      background = new Color(236, 236, 236)
       contents += new Button {
         borderPainted = false
         focusPainted = false
         preferredSize = buttonDim
         margin = new swing.Insets(10, 0, 10, 0)
-        tooltip = "Create a new maze"
         action = new Action("Create") {
           override def apply() = {
-//            grid.buildDebugGrid()
              grid.start()
              began = true
           }
         }
       }
       contents += Swing.HStrut(10)
-      contents += new Button {
-        borderPainted = false
-        focusPainted = false
-        preferredSize = buttonDim
-        margin = new swing.Insets(10, 0, 10, 0)
-        tooltip = "Close the program"
-        action = new Action("Clear") {
-          override def apply() = {
-            began = false
-            clear = true
-          }
-        }
-      }
+      contents += traceButton
       contents += Swing.HStrut(10)
       contents += modeButton
       contents += Swing.HStrut(10)
@@ -83,7 +82,21 @@ class Frame extends MainFrame {
         focusPainted = false
         preferredSize = buttonDim
         margin = new swing.Insets(10, 0, 10, 0)
-        tooltip = "Close the program"
+        action = new Action("Clear") {
+          override def apply() = {
+            canvas.clearTrace()
+            traceButton.selected = false
+            began = false
+            clear = true
+          }
+        }
+      }
+      contents += Swing.HStrut(10)
+      contents += new Button {
+        borderPainted = false
+        focusPainted = false
+        preferredSize = buttonDim
+        margin = new swing.Insets(10, 0, 10, 0)
         action = new Action("Quit") {
           override def apply() = {
             sys.exit(0)
