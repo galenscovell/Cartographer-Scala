@@ -20,7 +20,7 @@ class Cell(val xPos: Int, val yPos: Int, val cellSize: Int, val cellSpacing: Int
   private var connections: Int = 0
 
 
-  def setParent(p: Cell) = {
+  def setParent(p: Cell): Unit = {
     parent = p
     distanceFromRoot = p.distanceFromRoot + 1
   }
@@ -29,7 +29,7 @@ class Cell(val xPos: Int, val yPos: Int, val cellSize: Int, val cellSpacing: Int
     parent
   }
 
-  def animate() = {
+  def animate(): Int = {
     if (frame > 0) {
       frame -= 1
     } else {
@@ -38,33 +38,33 @@ class Cell(val xPos: Int, val yPos: Int, val cellSize: Int, val cellSpacing: Int
     frame
   }
 
-  def isFloor() = {
+  def isFloor(): Boolean = {
     cellType == CellType.FLOOR
   }
 
-  def setFloor() = {
+  def setFloor(): Unit = {
     cellType = CellType.FLOOR
   }
 
-  def isWall() = {
+  def isWall(): Boolean = {
     cellType == CellType.WALL
   }
 
-  def setWall() = {
+  def setWall(): Unit = {
     cellType = CellType.WALL
   }
 
-  def explore() = {
+  def explore(): Unit = {
     cellType = CellType.FLOOR
     animating = true
     frame = 90
   }
 
-  def isEmpty() = {
+  def isEmpty(): Boolean = {
     cellType == CellType.EMPTY
   }
   
-  def connect(cardinal: Int) = {
+  def connect(cardinal: Int): Unit = {
     // N=1, E=2, S=4, W=8
     connections += cardinal
   }

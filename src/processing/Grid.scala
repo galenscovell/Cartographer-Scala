@@ -18,7 +18,7 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
   build()
 
 
-  def build() = {
+  def build(): Unit = {
     frontier.clear()
     nextCell = null
     currentCell = null
@@ -38,12 +38,12 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
     }
   }
 
-  def start() = {
+  def start(): Unit = {
     // Start in bottom left corner
     mark(0, gridHeight - 1)
   }
 
-  private def mark(x: Int, y: Int) = {
+  private def mark(x: Int, y: Int): Unit = {
     val targetNode: Cell = cells(x)(y)
     targetNode.setFloor()
 
@@ -93,7 +93,7 @@ class Grid (val width: Int, val height: Int, val cellSize: Int, val cellSpacing:
     cells
   }
 
-  def expand() = {
+  def expand(): Unit = {
     if (nextCell == null) {
       if (frontier.length > 0) {
         nextCell = frontier(random.nextInt(frontier.length))

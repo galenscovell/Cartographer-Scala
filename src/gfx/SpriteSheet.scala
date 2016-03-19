@@ -18,14 +18,14 @@ class SpriteSheet (val pathStr: String, val xDim: Int, val yDim: Int) {
     subSprites(pos)
   }
 
-  private def load() = {
+  private def load(): Unit = {
     val sheet: BufferedImage = ImageIO.read(new File(path))
     val sheetWidth: Int = sheet.getWidth()
     val sheetHeight: Int = sheet.getHeight()
     loadSubSprites(sheet, sheetWidth, sheetHeight)
   }
 
-  private def loadSubSprites(img: BufferedImage, width: Int, height: Int) = {
+  private def loadSubSprites(img: BufferedImage, width: Int, height: Int): Unit = {
     val partsX: Int = width / spriteWidth
     val partsY: Int = height / spriteHeight
     subSprites = Array.ofDim[BufferedImage](partsX * partsY)

@@ -21,11 +21,11 @@ class Canvas (val cellGrid: Array[Array[Cell]], val width: Int, val height: Int,
   private val spriteSheet: SpriteSheet = new SpriteSheet("res/tilesheet.png", 24, 24)
 
 
-  def switchMode() = {
+  def switchMode(): Unit = {
     mode = !mode
   }
 
-  def switchTrace() = {
+  def switchTrace(): Unit = {
     if (trace) {
       clearTrace()
     } else {
@@ -33,12 +33,12 @@ class Canvas (val cellGrid: Array[Array[Cell]], val width: Int, val height: Int,
     }
   }
 
-  def clearTrace() = {
+  def clearTrace(): Unit = {
     tracePath.clear()
     trace = false
   }
 
-  private def generatePath(endCell: Cell) = {
+  private def generatePath(endCell: Cell): Unit = {
     var currentCell: Cell = endCell
     while (currentCell != null) {
       tracePath.append(currentCell)
@@ -47,7 +47,7 @@ class Canvas (val cellGrid: Array[Array[Cell]], val width: Int, val height: Int,
     trace = true
   }
 
-  override def paintComponent(gfx: Graphics2D) {
+  override def paintComponent(gfx: Graphics2D): Unit = {
     val dim: Dimension = size
     gfx.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
       java.awt.RenderingHints.VALUE_ANTIALIAS_ON)

@@ -18,7 +18,7 @@ class Frame extends MainFrame {
   private val maxCells: Int = width * height / (cellSize + cellSpacing)
   private val borderSize: Int = cellSize + cellSpacing
 
-  private final val framerate: Int = 960
+  private final val framerate: Int = 240
   private var running: Boolean = true
   private var clear: Boolean = false
   private var began: Boolean = false
@@ -55,7 +55,7 @@ class Frame extends MainFrame {
   startThread(grid, canvas)
 
 
-  private def createComponents(grid: Grid, canvas: Canvas) = {
+  private def createComponents(grid: Grid, canvas: Canvas): Unit = {
     title = "Visualizing Prim's"
     preferredSize = new Dimension(width + cellSize + 16, height + cellSize * 4 + 4)
     val buttonPanel = new FlowPanel {
@@ -112,7 +112,7 @@ class Frame extends MainFrame {
     }
   }
 
-  private def startThread(grid: Grid, canvas: Canvas) = {
+  private def startThread(grid: Grid, canvas: Canvas): Unit = {
     // Establish thread and enter run loop for rendering
     val thread = new Thread(new Runnable {
       override def run {
